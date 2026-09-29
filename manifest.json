@@ -1,0 +1,7 @@
+{
+  "name": "AutoDel",
+  "description": "按聊天开启，定时删除自己发送的新消息。",
+  "authors": [{ "name": "AutoDel contributors" }],
+  "main": "index.js",
+  "vendetta": { "icon": "ic_message_delete" }
+}

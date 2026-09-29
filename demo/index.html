@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AutoDel 功能演示</title>
+<style>
+body{margin:0;background:#17181c;color:#eee;font:16px system-ui}main{max-width:520px;margin:40px auto;padding:20px}button,input,select{font:inherit;padding:10px;border-radius:9px;border:0}button{cursor:pointer;background:#383a40;color:white}nav{display:flex;gap:12px;margin:20px 0}#chat{position:relative;border:1px solid #383a40;border-radius:16px;padding:16px;height:380px;display:flex;flex-direction:column}#messages{flex:1;overflow:auto;padding-bottom:60px}#toggle{position:absolute;right:16px;bottom:70px;border-radius:24px}#toggle.active{background:#5865f2}form{display:flex;gap:8px}input{min-width:0;flex:1}.message{padding:12px;background:#2b2d31;margin:8px 0;border-radius:8px}small{color:#aaa}#status{margin:16px 0}
+</style>
+<main>
+<h1>AutoDel 功能演示</h1>
+<small>本地模拟聊天，共用插件核心逻辑；消息只保存在当前页面。</small>
+<nav><button data-channel="A">聊天 A</button><button data-channel="B">聊天 B</button></nav>
+<label>删除延时 <select id="delay"><option value="3000">3 秒（测试）</option><option value="10000">10 秒</option><option value="60000">1 分钟</option><option value="300000">5 分钟</option></select></label>
+<p id="status"></p>
+<section id="chat"><strong id="title"></strong><div id="messages"></div><button id="toggle"></button><form><input id="content" placeholder="输入自己的消息" required><button>发送</button></form></section>
+<p>关闭模式后，已安排的任务仍会执行。切换聊天可检查开关是否独立。</p>
+</main>
+<script type="module" src="/demo/main.js"></script>
+</html>
