@@ -7,18 +7,20 @@ export function createUI(adapter, getCore) {
         React.useEffect(() => core.subscribe(() => update(n => n + 1)), [core]);
         return core.getSnapshot(channelId);
     }
-    function FloatingButton({ channelId = adapter.getChannelId() }) {
+    function FloatingButton({ channelId = adapter.getChannelId(), raised = false }) {
         const snapshot = useSnapshot(channelId);
         if (!channelId) return null;
         return React.createElement(Pressable, {
             accessibilityRole: "button",
             accessibilityLabel: snapshot.enabled ? "关闭自动删除" : "开启自动删除",
+            accessibilityHint: `删除延时 ${snapshot.delayMs / 1000} 秒`,
+            accessibilityState: { selected: snapshot.enabled },
             onPress: () => getCore().toggle(channelId),
-            style: { alignSelf: "flex-end", marginBottom: 8,
-                paddingVertical: 10, paddingHorizontal: 14, borderRadius: 24,
+            style: { alignSelf: "flex-end", marginBottom: raised ? 8 : 0,
+                width: 40, height: 40, borderRadius: 20,
+                alignItems: "center", justifyContent: "center",
                 backgroundColor: snapshot.enabled ? "#5865F2" : "#383A40", elevation: 6 }
-        }, React.createElement(Text, { style: { color: "white", fontWeight: "600" } },
-            snapshot.enabled ? `自动删除 · ${snapshot.delayMs / 1000}秒` : "自动删除 · 关闭"));
+        }, React.createElement(Text, { style: { color: "white", fontSize: 22 } }, "⏱"));
     }
     function Settings() {
         const snapshot = useSnapshot(adapter.getChannelId());

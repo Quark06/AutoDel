@@ -43,15 +43,29 @@ export function createKettuAdapter(api) {
         },
         mountButton(Button) {
             const arrowIcon = api.ui.assets.getAssetIDByName("ArrowLargeDownIcon");
-            return api.patcher.after("default", target, ([{ channelId }], original) => {
-                if (original == null) return;
-                const jumpToPresentButton = original.props?.children;
+            const positions = new Map();
+            const unpatch = api.patcher.after("default", target, ([{ channelId }], original) => {
+                const jumpToPresentButton = original?.props?.children;
                 // Preserve the voice-chat close button, as JumpToTop does.
-                if (jumpToPresentButton?.props?.icon !== arrowIcon) return;
-                return React.cloneElement(original, undefined,
-                    React.createElement(Stack, null,
-                        React.createElement(Button, { channelId }), jumpToPresentButton));
+                if (jumpToPresentButton && jumpToPresentButton.props?.icon !== arrowIcon) return;
+                if (original) {
+                    const nativeStyle = ReactNative.StyleSheet.flatten(original.props?.style) ?? {};
+                    const position = { ...positions.get(channelId) };
+                    // Reuse native placement, without its visibility/animation styles.
+                    for (const key of ["bottom", "right", "left", "top", "paddingBottom", "paddingRight", "marginBottom", "marginRight"]) {
+                        if (typeof nativeStyle[key] === "number") position[key] = nativeStyle[key];
+                    }
+                    positions.set(channelId, position);
+                }
+                return React.createElement(ReactNative.View, {
+                    pointerEvents: "box-none",
+                    style: { position: "absolute", bottom: 16, right: 16,
+                        ...positions.get(channelId), zIndex: 100, alignItems: "flex-end" }
+                }, React.createElement(Stack, { style: { alignItems: "flex-end" } },
+                    React.createElement(Button, { channelId, raised: Boolean(jumpToPresentButton) }),
+                    jumpToPresentButton));
             });
+            return () => { unpatch(); positions.clear(); };
         }
     };
 }

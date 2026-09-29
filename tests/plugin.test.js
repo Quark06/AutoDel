@@ -29,10 +29,13 @@ test("构建产物可由 Kettu 加载协议执行，卸载会释放订阅和补�
             },
             common: {
                 React: {
+                    useState: () => [0, () => {}],
+                    useEffect() {},
                     createElement: (type, props, ...children) => ({ type, props: { ...props, children } }),
                     cloneElement: (element, props, children) => ({ ...element, props: { ...element.props, ...props, children } })
                 },
-                ReactNative: { AppState: { addEventListener() {
+                ReactNative: { View: "View", Text: "Text", Pressable: "Pressable",
+                    StyleSheet: { flatten: style => style }, AppState: { addEventListener() {
                     resumed = true; return { remove() { resumed = false; } };
                 } } },
                 FluxDispatcher: {
@@ -60,13 +63,38 @@ test("构建产物可由 Kettu 加载协议执行，卸载会释放订阅和补�
     assert.equal(patched, true);
     assert.equal(resumed, true);
     assert.equal(subscriptions.has("MESSAGE_CREATE"), true);
+    const initialBottom = renderOverlay([{ channelId: "A" }], null);
+    assert.equal(initialBottom.type, "View");
+    assert.equal(initialBottom.props.children[0].props.children[0].props.raised, false);
     const originalButton = { props: { icon: 42 } };
-    const original = { type: "Overlay", props: { children: originalButton } };
+    const original = { type: "Overlay", props: {
+        style: { bottom: 24, right: 12, opacity: 0 }, children: originalButton
+    } };
     const overlay = renderOverlay([{ channelId: "A" }], original);
-    assert.equal(overlay.type, "Overlay");
-    assert.equal(overlay.props.children.type, "Stack");
-    assert.equal(overlay.props.children.props.children[0].props.channelId, "A");
-    assert.equal(overlay.props.children.props.children[1], originalButton);
+    assert.equal(overlay.type, "View");
+    assert.equal(overlay.props.style.bottom, 24);
+    assert.equal(overlay.props.style.right, 12);
+    assert.equal(overlay.props.style.opacity, undefined);
+    const stack = overlay.props.children[0];
+    assert.equal(stack.type, "Stack");
+    assert.equal(stack.props.children[0].props.channelId, "A");
+    assert.equal(stack.props.children[0].props.raised, true);
+    assert.equal(stack.props.children[1], originalButton);
+    const buttonElement = stack.props.children[0];
+    const button = buttonElement.type(buttonElement.props);
+    assert.equal(button.props.style.width, 40);
+    assert.equal(button.props.style.height, 40);
+    assert.equal(button.props.style.marginBottom, 8);
+    assert.equal(button.props.children[0].props.children[0], "⏱");
+    button.props.onPress();
+    assert.equal(api.plugin.storage.state.accounts.self.channels.A.enabled, true);
+    assert.equal(buttonElement.type(buttonElement.props).props.style.backgroundColor, "#5865F2");
+    const atBottom = renderOverlay([{ channelId: "A" }], null);
+    assert.equal(atBottom.props.style.bottom, 24);
+    assert.equal(atBottom.props.children[0].props.children[0].props.raised, false);
+    assert.equal(atBottom.props.children[0].props.children[1], undefined);
+    const loweredButton = atBottom.props.children[0].props.children[0];
+    assert.equal(loweredButton.type(loweredButton.props).props.style.marginBottom, 0);
     plugin.onUnload();
     assert.equal(patched, false);
     assert.equal(resumed, false);
