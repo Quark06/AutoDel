@@ -59,7 +59,7 @@ export function createKettuAdapter(api) {
                 }
                 return React.createElement(ReactNative.View, {
                     pointerEvents: "box-none",
-                    style: { position: "absolute", bottom: 16, right: 16,
+                    style: { position: "absolute", bottom: 65, right: 16,
                         ...positions.get(channelId), zIndex: 100, alignItems: "flex-end" }
                 }, React.createElement(Stack, { style: { alignItems: "flex-end" } },
                     React.createElement(Button, { channelId, raised: Boolean(jumpToPresentButton) }),
