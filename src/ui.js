@@ -26,11 +26,13 @@ export function createUI(adapter, getCore) {
         const snapshot = useSnapshot(adapter.getChannelId());
         return React.createElement(View, { style: { padding: 20, gap: 12 } },
             React.createElement(Text, { style: { color: "#b5bac1" } }, "删除延时：只影响之后发送的新消息"),
-            ...[10, 60, 300].map(seconds => React.createElement(Pressable, {
+            ...[[60, "1 分钟"], [300, "5 分钟"], [600, "10 分钟"],
+                [900, "15 分钟"], [1800, "30 分钟"], [10, "10 秒（开发调试）"]]
+                .map(([seconds, label]) => React.createElement(Pressable, {
                 key: seconds, onPress: () => getCore().setDelay(seconds * 1000),
                 style: { padding: 12, borderRadius: 8,
                     backgroundColor: snapshot.delayMs === seconds * 1000 ? "#5865F2" : "#383A40" }
-            }, React.createElement(Text, { style: { color: "white" } }, `${seconds} 秒`))),
+            }, React.createElement(Text, { style: { color: "white" } }, label))),
             React.createElement(Text, { style: { color: "#b5bac1" } },
                 `当前账号待删除：${snapshot.pending}，失败：${snapshot.failed}`),
             React.createElement(Pressable, { onPress: () => getCore().retryFailed(), style: { padding: 12 } },
