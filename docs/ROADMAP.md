@@ -46,17 +46,20 @@
 
 | 文件 | 职责 |
 | --- | --- |
-| src/core.js | 规则、状态、任务保存和到期执行；不引用 Kettu |
-| src/kettu.js | 客户端内部模块查询、消息订阅、删除调用和聊天界面接入 |
-| src/ui.js | 原生悬浮按钮和插件设置页 |
-| src/index.js | 插件生命周期，组合并释放以上模块 |
+| src/shared/core.js | 共享核心（Shared Core）：规则、状态、任务保存和到期执行 |
+| src/kettu/adapter.js | 客户端内部模块查询、消息订阅、删除调用和聊天界面接入 |
+| src/kettu/ui.js | 原生悬浮按钮和插件设置页 |
+| src/kettu/index.js | 插件生命周期，组合并释放以上模块 |
+| src/kettu/manifest.json | Kettu 插件清单（Manifest） |
+| src/betterdiscord/ | BetterDiscord 版本预留目录，尚未实现 |
 | demo/ | 可操作的本地功能演示，不连接 Discord |
 | scripts/ | 插件构建和本地服务 |
-| tests/ | 核心功能与插件加载测试 |
+| tests/shared/ | 共享核心功能测试（Functional Testing） |
+| tests/kettu/ | Kettu 插件加载测试 |
 
 ## 当前实现限制（Implementation Limits）
 
-- 客户端内部模块随版本变化；所有相关名称集中在 src/kettu.js。
+- 客户端内部模块随版本变化；所有相关名称集中在 src/kettu/adapter.js。
 - 当前按 MESSAGE_CREATE 中当前账号作者判断新消息，可能包含同账号其他设备发送且本机收到的消息。只限本设备发送的精确筛选留待真机确认事件格式后决定。
 - 本地演示持久化开关和任务，但演示消息只在当前页面内存中保存，刷新后的演示不用于验证消息恢复。
 - 原生预设为 10 秒、1 分钟、5 分钟；演示额外提供 3 秒便于快速验收。

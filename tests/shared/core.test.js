@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { createAutoDel } from "../src/core.js";
+import { createAutoDel } from "../../src/shared/core.js";
 
 function fixture() {
     let clock = 1000;

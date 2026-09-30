@@ -1,5 +1,5 @@
-import { createAutoDel } from "./core.js";
-import { createKettuAdapter } from "./kettu.js";
+import { createAutoDel } from "../shared/core.js";
+import { createKettuAdapter } from "./adapter.js";
 import { createUI } from "./ui.js";
 
 // Kettu evaluates the bundle inside a function whose argument is `vendetta`.

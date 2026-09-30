@@ -1,4 +1,4 @@
-import { createAutoDel } from "/src/core.js";
+import { createAutoDel } from "/src/shared/core.js";
 let channelId = "A";
 const messages = [];
 const core = createAutoDel({
