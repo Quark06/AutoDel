@@ -93,6 +93,10 @@ test("BetterDiscord 单文件加载、聊天开关、删除、恢复和卸载", 
     assert.equal(button.style.top, "412px");
     const panel = plugin.getSettingsPanel();
     const select = panel.children[1].children[0];
+    assert.deepEqual(Array.from(select.children, option => Number(option.value)),
+        [10000, 60000, 300000, 600000, 1200000, 1800000]);
+    select.value = "1800000"; select.onchange();
+    assert.equal(plugin.core.getSnapshot("A").delayMs, 1800000);
     select.value = "10000"; select.onchange();
     const send = (id, author = "self") => subscriptions.get("MESSAGE_CREATE")({
         message: { id, author: { id: author }, channel_id: channelId, timestamp: new Date(clock).toISOString() }

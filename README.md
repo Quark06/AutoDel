@@ -34,7 +34,7 @@ BetterDiscord 的聊天按钮、设置页、消息订阅、任务保存与恢复
 
 1. 运行 `npm run build:betterdiscord`，或使用 `npm run build` 构建两端版本。
 2. 在 Discord 的 BetterDiscord 插件设置中打开插件文件夹，将 `dist/betterdiscord/AutoDel.plugin.js` 复制进去并启用 AutoDel。
-3. 打开聊天，点击消息区域右下角计时按钮开启；在插件设置页选择 10 秒、1 分钟或 5 分钟。
+3. 打开聊天，点击消息区域右下角计时按钮开启；在插件设置页选择 1、5、10、20、30 分钟，或 10 秒测试档位。
 4. 发送自己的新消息，按 [桌面功能验收（Desktop Acceptance）](docs/TESTING.md#betterdiscord-桌面功能验收desktop-acceptance) 验证删除闭环。
 
 默认 5 分钟；停用插件或关闭 Discord 时无法删除，重新启用后处理已到期任务。关闭聊天开关不会取消已安排任务。

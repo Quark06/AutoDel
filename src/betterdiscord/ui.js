@@ -7,9 +7,18 @@ const css = `
     box-shadow:0 2px 8px #0005; }
 #autodel-chat-button[data-enabled="true"] { background:#5865f2; color:#fff; }
 #autodel-chat-button:focus-visible { outline:2px solid #5865f2; outline-offset:3px; }
-.autodel-settings { color:var(--text-normal); padding:16px; }
-.autodel-settings select, .autodel-settings button { padding:8px; margin:8px;
-    color:var(--text-normal); background:var(--background-secondary); border:1px solid var(--background-modifier-accent); border-radius:4px; }
+.autodel-settings { color:var(--text-normal,#f2f3f5); padding:16px; }
+.autodel-settings select, .autodel-settings button { padding:8px 12px; margin:8px;
+    color:#f2f3f5 !important; background:#2b2d31 !important;
+    border:1px solid #80848e !important; border-radius:4px; font:inherit;
+    min-height:36px; color-scheme:dark; }
+.autodel-settings select { min-width:160px; cursor:pointer; }
+.autodel-settings select option { color:#f2f3f5; background:#2b2d31; }
+.autodel-settings button { cursor:pointer; }
+.autodel-settings button:hover:not(:disabled) { background:#404249 !important; }
+.autodel-settings button:disabled { color:#b5bac1 !important; cursor:not-allowed; opacity:1; }
+.autodel-settings select:focus-visible, .autodel-settings button:focus-visible {
+    outline:2px solid #5865f2; outline-offset:2px; }
 `;
 
 export function createUI(api, adapter, core) {
@@ -91,7 +100,10 @@ export function createUI(api, adapter, core) {
             const label = document.createElement("label");
             label.textContent = "新消息删除延时";
             const select = document.createElement("select");
-            for (const [value, text] of [[10000, "10 秒"], [60000, "1 分钟"], [300000, "5 分钟"]]) {
+            for (const [value, text] of [
+                [10000, "10 秒（测试）"], [60000, "1 分钟"], [300000, "5 分钟"],
+                [600000, "10 分钟"], [1200000, "20 分钟"], [1800000, "30 分钟"]
+            ]) {
                 const option = document.createElement("option");
                 option.value = String(value); option.textContent = text; select.append(option);
             }

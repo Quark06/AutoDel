@@ -44,7 +44,7 @@
 
 - [x] 平台适配层（Adapter）：账号、聊天、消息事件、删除调用和本地存储。
 - [x] 插件生命周期（Lifecycle）：启动恢复任务，停用释放监听和界面。
-- [x] 聊天按钮和设置页：10 秒、1 分钟、5 分钟预设，失败手动重试。
+- [x] 聊天按钮和设置页：1、5、10、20、30 分钟五档预设，加 10 秒测试档位，失败手动重试。
 - [x] 单文件构建产物（Build Artifact）：`dist/betterdiscord/AutoDel.plugin.js`。
 - [x] 本地功能测试（Functional Testing）和桌面客户端验收说明。
 - [ ] 团队在目标 Discord / BetterDiscord 版本验证按钮位置及真实消息删除。
