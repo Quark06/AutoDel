@@ -38,6 +38,17 @@
 
 验收标准：在聊天 A 激活后，自己的新消息按预设删除；聊天 B 未激活的消息保留。
 
+## BetterDiscord 桌面版本（Desktop Plugin）
+
+沿用以上产品规则，共享删除核心；桌面界面使用 40×40 计时按钮，在消息区域右下角常驻，回底条出现时向上排列。
+
+- [x] 平台适配层（Adapter）：账号、聊天、消息事件、删除调用和本地存储。
+- [x] 插件生命周期（Lifecycle）：启动恢复任务，停用释放监听和界面。
+- [x] 聊天按钮和设置页：10 秒、1 分钟、5 分钟预设，失败手动重试。
+- [x] 单文件构建产物（Build Artifact）：`dist/betterdiscord/AutoDel.plugin.js`。
+- [x] 本地功能测试（Functional Testing）和桌面客户端验收说明。
+- [ ] 团队在目标 Discord / BetterDiscord 版本验证按钮位置及真实消息删除。
+
 ## 后续阶段：使用体验（User Experience）
 
 真机闭环完成后，再实现自定义时长输入、失败原因展示、按钮位置调整。当前不加入批量历史清理、删除别人消息、多设备同步（Multi-device Sync）和后台常驻服务（Background Service）。
@@ -51,15 +62,19 @@
 | src/kettu/ui.js | 原生悬浮按钮和插件设置页 |
 | src/kettu/index.js | 插件生命周期，组合并释放以上模块 |
 | src/kettu/manifest.json | Kettu 插件清单（Manifest） |
-| src/betterdiscord/ | BetterDiscord 版本预留目录，尚未实现 |
+| src/betterdiscord/index.js | BetterDiscord 插件生命周期（Lifecycle） |
+| src/betterdiscord/adapter.js | 桌面模块、消息订阅、删除调用、存储和界面选择器（Selectors） |
+| src/betterdiscord/ui.js | 桌面计时按钮和插件设置页（UI） |
 | demo/ | 可操作的本地功能演示，不连接 Discord |
 | scripts/ | 插件构建和本地服务 |
 | tests/shared/ | 共享核心功能测试（Functional Testing） |
 | tests/kettu/ | Kettu 插件加载测试 |
+| tests/betterdiscord/ | BetterDiscord 单文件插件功能测试（Functional Testing） |
 
 ## 当前实现限制（Implementation Limits）
 
 - 客户端内部模块随版本变化；所有相关名称集中在 src/kettu/adapter.js。
+- BetterDiscord 的内部模块名和界面选择器（Selectors）集中在 src/betterdiscord/adapter.js，目标桌面版本接入仍待团队验证。
 - 当前按 MESSAGE_CREATE 中当前账号作者判断新消息，可能包含同账号其他设备发送且本机收到的消息。只限本设备发送的精确筛选留待真机确认事件格式后决定。
 - 本地演示持久化开关和任务，但演示消息只在当前页面内存中保存，刷新后的演示不用于验证消息恢复。
 - 原生预设为 10 秒、1 分钟、5 分钟；演示额外提供 3 秒便于快速验收。

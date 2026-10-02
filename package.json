@@ -4,8 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "npm run build:kettu",
+    "build": "npm run build:kettu && npm run build:betterdiscord",
     "build:kettu": "node scripts/build-kettu.mjs",
+    "build:betterdiscord": "node scripts/build-betterdiscord.mjs",
     "dev": "node scripts/serve.mjs",
     "test": "node --test"
   },

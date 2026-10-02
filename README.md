@@ -1,6 +1,6 @@
 # AutoDel · 自动删除插件
 
-同仓库（Repository）维护 Kettu 和 BetterDiscord 版本。目前 Kettu 已有实现，BetterDiscord 仅预留目录。
+同仓库（Repository）维护 Kettu 和 BetterDiscord 版本，共用自动删除核心（Shared Core）。两端代码及构建已提供，目标客户端验收由团队执行。
 
 最小可测试框架（Minimal Testable Scaffold）：按聊天开启，定时删除当前账号自己发送的新消息。
 
@@ -19,6 +19,7 @@ npm run dev
 
 - 本地演示（Local Demo）：http://localhost:5173/
 - 插件产物（Build Artifacts）：`dist/autodel/manifest.json` 和 `dist/autodel/index.js`
+- BetterDiscord 产物（Build Artifact）：`dist/betterdiscord/AutoDel.plugin.js`
 - Kettu 安装地址（Plugin URL）：`http://电脑局域网IP:5173/dist/autodel/`
 
 构建后运行 `npm test` 会额外验证构建产物的生命周期（Lifecycle）。更改源码后重新构建，并在 Kettu 中更新或重新加载插件。
@@ -26,6 +27,17 @@ npm run dev
 ## 当前状态
 
 核心、浏览器演示和 Kettu 接入代码已提供。真机加载、原生按钮布局和 Discord 删除接口尚待验证，不能把本地模拟结果当作真机已可用。
+
+BetterDiscord 的聊天按钮、设置页、消息订阅、任务保存与恢复、失败重试已提供。桌面客户端（Desktop Client）真实接入仍待团队验收。
+
+## BetterDiscord 安装（Installation）
+
+1. 运行 `npm run build:betterdiscord`，或使用 `npm run build` 构建两端版本。
+2. 在 Discord 的 BetterDiscord 插件设置中打开插件文件夹，将 `dist/betterdiscord/AutoDel.plugin.js` 复制进去并启用 AutoDel。
+3. 打开聊天，点击消息区域右下角计时按钮开启；在插件设置页选择 10 秒、1 分钟或 5 分钟。
+4. 发送自己的新消息，按 [桌面功能验收（Desktop Acceptance）](docs/TESTING.md#betterdiscord-桌面功能验收desktop-acceptance) 验证删除闭环。
+
+默认 5 分钟；停用插件或关闭 Discord 时无法删除，重新启用后处理已到期任务。关闭聊天开关不会取消已安排任务。
 
 默认删除延时为 5 分钟。聊天开关及待删除任务通过插件本地存储（Local Storage）保存。关闭聊天开关不取消旧任务。应用被系统终止时不能执行删除，重启或恢复前台后补处理。
 
@@ -42,17 +54,22 @@ src/
     ui.js                 # 原生界面（Native UI）
     manifest.json         # 插件清单（Manifest）
   betterdiscord/
-    README.md             # BetterDiscord 版本开发说明
+    index.js              # 桌面插件入口（Entry Point）
+    adapter.js            # 平台适配层（Adapter）
+    ui.js                 # 聊天按钮和设置页（UI）
+    README.md             # BetterDiscord 版本说明
 scripts/
   build-kettu.mjs         # Kettu 构建脚本（Build Script）
+  build-betterdiscord.mjs # BetterDiscord 单文件构建
   serve.mjs              # 本地服务（Local Server）
 tests/
   shared/core.test.js     # 共享核心功能测试（Functional Testing）
   kettu/plugin.test.js    # Kettu 加载及卸载测试
+  betterdiscord/plugin.test.js # BetterDiscord 功能测试
 demo/                    # 浏览器演示（Browser Demo）
 docs/                    # 开发路线与验收说明
 ```
 
-根目录统一管理依赖（Dependencies）和命令。`npm run build` 与 `npm run build:kettu` 均构建 Kettu，继续输出到 `dist/autodel/`，现有安装地址保持有效。BetterDiscord 实现后增加独立构建命令及 `dist/betterdiscord/` 产物目录（Build Artifacts）。
+根目录统一管理依赖（Dependencies）和命令。`npm run build` 构建两个版本；`npm run build:kettu` 和 `npm run build:betterdiscord` 分别构建对应版本。Kettu 继续输出到 `dist/autodel/`，现有安装地址保持有效。
 
 共享核心只处理规则、状态和删除调度；各平台分别实现消息订阅、存储、删除调用及界面接入。
