@@ -12,43 +12,34 @@ AutoDel 是适用于 BetterDiscord 和 Kettu 的 Discord 插件（Plugin）。�
 
 ## 安装（Installation）
 
-先安装对应客户端的插件环境：桌面端使用 BetterDiscord，移动端使用 Kettu。当前需要从源码构建（Build）安装文件；真实客户端兼容性仍待验证。
+先安装对应客户端的插件环境：桌面端使用 BetterDiscord，移动端使用 Kettu。Kettu 可使用下面的在线安装地址；BetterDiscord 需要从源码构建（Build）安装文件。真实客户端兼容性仍待验证。
 
-### 准备安装文件
+### Kettu
+
+在 Kettu 插件页添加以下安装地址（Plugin URL），安装并启用 **AutoDel**：
+
+```text
+https://quark06.github.io/AutoDel/autodel/
+```
+
+该地址在 GitHub Pages 首次发布成功后可用。安装时无需电脑保持在线；后续更新仍使用同一地址。
+
+如需本地安装，先下载本仓库并运行 `npm ci`，再在电脑运行 `npm run build:kettu` 和 `npm run dev`，手机与电脑连接同一局域网（LAN），再添加 `http://电脑局域网IP:5173/dist/autodel/`。
+
+### BetterDiscord
 
 电脑需要安装 Node.js 20 或更高版本。下载本仓库并解压，在解压目录打开终端（Terminal），运行：
 
 ```powershell
 npm ci
-npm run build
+npm run build:betterdiscord
 ```
 
-生成的安装文件：
-
-| 客户端 | 安装文件 |
-| --- | --- |
-| BetterDiscord | `dist/betterdiscord/AutoDel.plugin.js` |
-| Kettu | `dist/autodel/` 中的 `manifest.json` 和 `index.js` |
-
-### BetterDiscord
+安装文件会生成到 `dist/betterdiscord/AutoDel.plugin.js`。
 
 1. 打开 Discord 设置，进入 BetterDiscord 的插件页（Plugins）。
 2. 打开插件文件夹，将 `dist/betterdiscord/AutoDel.plugin.js` 复制进去。
 3. 回到插件页，启用 **AutoDel**。
-
-### Kettu
-
-1. 在电脑的项目目录运行 `npm run dev`，保持终端开启。
-2. 将手机和电脑连接到同一局域网（LAN），确保电脑防火墙允许端口 `5173`。
-3. 在 Kettu 插件页添加以下安装地址（Plugin URL），将占位文字替换为电脑的局域网 IP 地址：
-
-   ```text
-   http://电脑局域网IP:5173/dist/autodel/
-   ```
-
-4. 安装并启用 **AutoDel**。
-
-如果客户端不接受本地 HTTP 地址，可将 `dist/autodel/` 的两个文件放到 HTTPS 静态托管（Static hosting）服务，再使用该目录的地址安装。更新插件时，安装来源需要保持可访问。
 
 ## 使用
 
@@ -90,7 +81,7 @@ npm run build
 
 **如何更新？**
 
-下载最新源码并重新运行 `npm ci` 和 `npm run build`。BetterDiscord 替换插件文件后重新加载；Kettu 更新安装来源中的文件，再通过客户端更新插件。
+Kettu 在插件页检查并更新 AutoDel，安装地址不变。BetterDiscord 下载最新源码并重新运行 `npm ci` 和 `npm run build:betterdiscord`，替换插件文件后重新加载。
 
 ## 问题反馈
 
