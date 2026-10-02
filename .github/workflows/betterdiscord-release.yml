@@ -1,0 +1,72 @@
+name: Release BetterDiscord plugin
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: betterdiscord-release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Check stable release version
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs';
+          const { version } = JSON.parse(readFileSync('package.json', 'utf8'));
+          const tag = process.env.GITHUB_REF_NAME;
+          if (!/^v\d+\.\d+\.\d+$/.test(tag) || tag !== `v${version}`) {
+            throw new Error(`Stable release tag must match package.json version: v${version}; received ${tag}`);
+          }
+          console.log(`Publishing stable version ${version}`);
+          NODE
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build BetterDiscord plugin
+        run: npm run build:betterdiscord
+
+      - name: Test BetterDiscord plugin
+        run: node --test tests/shared/core.test.js tests/betterdiscord/plugin.test.js
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          tag="$GITHUB_REF_NAME"
+          version=$(node -p "JSON.parse(require('fs').readFileSync('package.json', 'utf8')).version")
+          cat > "$RUNNER_TEMP/betterdiscord-release-notes.md" <<EOF
+          下载附件 AutoDel.plugin.js，放入 BetterDiscord 的插件文件夹并启用 AutoDel。
+
+          插件版本（Version）：${version}
+          源码提交（Commit）：${GITHUB_SHA}
+          使用说明：https://github.com/${GH_REPO}/blob/${GITHUB_SHA}/README.md
+          EOF
+          if gh release view "$tag" > /dev/null 2>&1; then
+            gh release upload "$tag" dist/betterdiscord/AutoDel.plugin.js --clobber
+          else
+            gh release create "$tag" dist/betterdiscord/AutoDel.plugin.js \
+              --verify-tag \
+              --title "BetterDiscord ${tag}" \
+              --notes-file "$RUNNER_TEMP/betterdiscord-release-notes.md" \
+              --latest
+          fi
