@@ -1,75 +1,97 @@
-# AutoDel · 自动删除插件
+# AutoDel · 自动删除消息
 
-同仓库（Repository）维护 Kettu 和 BetterDiscord 版本，共用自动删除核心（Shared Core）。两端代码及构建已提供，目标客户端验收由团队执行。
+AutoDel 是适用于 BetterDiscord 和 Kettu 的 Discord 插件（Plugin）。在指定聊天中开启后，自己发送的新消息会按设定的延时自动删除。
 
-最小可测试框架（Minimal Testable Scaffold）：按聊天开启，定时删除当前账号自己发送的新消息。
+## 功能
 
-开发范围及推进顺序固定在 [开发路线（Roadmap）](docs/ROADMAP.md)，团队验收步骤见 [功能测试（Functional Testing）](docs/TESTING.md)。
+- 每个聊天独立开关，开启后计时按钮高亮。
+- 只处理开启后自己发送的新消息，不清理历史消息，也不删除其他人的消息。
+- 默认延时为 5 分钟，可在插件设置中调整。
+- 保存聊天开关和待删除任务，重启后继续处理。
+- 设置页显示待删除和失败数量，支持手动重试。
 
-## 开始使用
+## 安装（Installation）
 
-需要 Node.js 20 或更高版本。
+先安装对应客户端的插件环境：桌面端使用 BetterDiscord，移动端使用 Kettu。当前需要从源码构建（Build）安装文件；真实客户端兼容性仍待验证。
+
+### 准备安装文件
+
+电脑需要安装 Node.js 20 或更高版本。下载本仓库并解压，在解压目录打开终端（Terminal），运行：
 
 ```powershell
-npm install
-npm test
+npm ci
 npm run build
-npm run dev
 ```
 
-- 本地演示（Local Demo）：http://localhost:5173/
-- 插件产物（Build Artifacts）：`dist/autodel/manifest.json` 和 `dist/autodel/index.js`
-- BetterDiscord 产物（Build Artifact）：`dist/betterdiscord/AutoDel.plugin.js`
-- Kettu 安装地址（Plugin URL）：`http://电脑局域网IP:5173/dist/autodel/`
+生成的安装文件：
 
-构建后运行 `npm test` 会额外验证构建产物的生命周期（Lifecycle）。更改源码后重新构建，并在 Kettu 中更新或重新加载插件。
+| 客户端 | 安装文件 |
+| --- | --- |
+| BetterDiscord | `dist/betterdiscord/AutoDel.plugin.js` |
+| Kettu | `dist/autodel/` 中的 `manifest.json` 和 `index.js` |
 
-## 当前状态
+### BetterDiscord
 
-核心、浏览器演示和 Kettu 接入代码已提供。真机加载、原生按钮布局和 Discord 删除接口尚待验证，不能把本地模拟结果当作真机已可用。
+1. 打开 Discord 设置，进入 BetterDiscord 的插件页（Plugins）。
+2. 打开插件文件夹，将 `dist/betterdiscord/AutoDel.plugin.js` 复制进去。
+3. 回到插件页，启用 **AutoDel**。
 
-BetterDiscord 的聊天按钮、设置页、消息订阅、任务保存与恢复、失败重试已提供。桌面客户端（Desktop Client）真实接入仍待团队验收。
+### Kettu
 
-## BetterDiscord 安装（Installation）
+1. 在电脑的项目目录运行 `npm run dev`，保持终端开启。
+2. 将手机和电脑连接到同一局域网（LAN），确保电脑防火墙允许端口 `5173`。
+3. 在 Kettu 插件页添加以下安装地址（Plugin URL），将占位文字替换为电脑的局域网 IP 地址：
 
-1. 运行 `npm run build:betterdiscord`，或使用 `npm run build` 构建两端版本。
-2. 在 Discord 的 BetterDiscord 插件设置中打开插件文件夹，将 `dist/betterdiscord/AutoDel.plugin.js` 复制进去并启用 AutoDel。
-3. 打开聊天，点击消息区域右下角计时按钮开启；在插件设置页选择 1、5、10、20、30 分钟，或 10 秒测试档位。
-4. 发送自己的新消息，按 [桌面功能验收（Desktop Acceptance）](docs/TESTING.md#betterdiscord-桌面功能验收desktop-acceptance) 验证删除闭环。
+   ```text
+   http://电脑局域网IP:5173/dist/autodel/
+   ```
 
-默认 5 分钟；停用插件或关闭 Discord 时无法删除，重新启用后处理已到期任务。关闭聊天开关不会取消已安排任务。
+4. 安装并启用 **AutoDel**。
 
-默认删除延时为 5 分钟。聊天开关及待删除任务通过插件本地存储（Local Storage）保存。关闭聊天开关不取消旧任务。应用被系统终止时不能执行删除，重启或恢复前台后补处理。
+如果客户端不接受本地 HTTP 地址，可将 `dist/autodel/` 的两个文件放到 HTTPS 静态托管（Static hosting）服务，再使用该目录的地址安装。更新插件时，安装来源需要保持可访问。
 
-实现依据为 [Kettu 兼容接口（Compatibility API）](https://github.com/C0C0B01/Kettu/blob/github/src/core/vendetta/api.tsx) 和 [插件加载器（Plugin Loader）](https://github.com/C0C0B01/Kettu/blob/github/src/core/vendetta/plugins.ts)，具体源码参考集中在开发路线中。
+## 使用
 
-## 文件目录（Directory Structure）
+1. 打开要自动删除消息的聊天。
+2. 点击聊天右下角的 **⏱** 按钮；高亮表示该聊天已开启。
+3. 在 AutoDel 设置中选择删除延时。
+4. 发送新消息，消息会在到期后自动删除。
 
-```text
-src/
-  shared/core.js          # 共享核心（Shared Core）
-  kettu/
-    index.js              # 插件入口（Entry Point）
-    adapter.js            # 平台适配层（Adapter）
-    ui.js                 # 原生界面（Native UI）
-    manifest.json         # 插件清单（Manifest）
-  betterdiscord/
-    index.js              # 桌面插件入口（Entry Point）
-    adapter.js            # 平台适配层（Adapter）
-    ui.js                 # 聊天按钮和设置页（UI）
-    README.md             # BetterDiscord 版本说明
-scripts/
-  build-kettu.mjs         # Kettu 构建脚本（Build Script）
-  build-betterdiscord.mjs # BetterDiscord 单文件构建
-  serve.mjs              # 本地服务（Local Server）
-tests/
-  shared/core.test.js     # 共享核心功能测试（Functional Testing）
-  kettu/plugin.test.js    # Kettu 加载及卸载测试
-  betterdiscord/plugin.test.js # BetterDiscord 功能测试
-demo/                    # 浏览器演示（Browser Demo）
-docs/                    # 开发路线与验收说明
-```
+再次点击 **⏱** 可关闭当前聊天的自动删除。其他聊天的开关不受影响。
 
-根目录统一管理依赖（Dependencies）和命令。`npm run build` 构建两个版本；`npm run build:kettu` 和 `npm run build:betterdiscord` 分别构建对应版本。Kettu 继续输出到 `dist/autodel/`，现有安装地址保持有效。
+| 客户端 | 可选延时 |
+| --- | --- |
+| BetterDiscord | 1、5、10、20、30 分钟，以及 10 秒测试档位 |
+| Kettu | 1、5、10、15、30 分钟，以及 10 秒测试档位 |
 
-共享核心只处理规则、状态和删除调度；各平台分别实现消息订阅、存储、删除调用及界面接入。
+延时设置对当前客户端内所有已开启的聊天生效，修改只影响之后的新消息；已经安排的消息仍按原定时间删除。
+
+## 常见问题（FAQ）
+
+**关闭聊天开关后，之前的消息还会删除吗？**
+
+会。关闭只停止为新消息安排删除，已经安排的任务仍会继续执行。
+
+**关闭 Discord 或停用插件后，还能按时删除吗？**
+
+不能。插件需要在客户端运行时执行删除；重新启动并启用插件后，会继续处理已到期任务。
+
+**消息删除失败怎么办？**
+
+打开 AutoDel 设置查看失败数量，确认客户端在线后点击“重试失败任务”。
+
+**换账号会影响另一账号的任务吗？**
+
+聊天开关和任务按账号分别保存。切换账号后，不会执行另一账号的删除任务。
+
+**会保存消息正文吗？**
+
+不会。插件本地存储（Local storage）仅保存开关、延时、消息标识和删除任务等信息。
+
+**如何更新？**
+
+下载最新源码并重新运行 `npm ci` 和 `npm run build`。BetterDiscord 替换插件文件后重新加载；Kettu 更新安装来源中的文件，再通过客户端更新插件。
+
+## 问题反馈
+
+请到 [Issues](https://github.com/Quark06/AutoDel/issues) 描述问题，附上 Discord、BetterDiscord 或 Kettu 的版本，以及复现步骤。请勿附带账号令牌（Token）或私人消息正文。
