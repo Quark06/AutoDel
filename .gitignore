@@ -3,3 +3,7 @@ node_modules/
 dist/
 .idea/
 .DS_Store
+
+# Local agent instructions
+/[Aa][Gg][Ee][Nn][Tt][Ss].[Mm][Dd]
+/[Aa][Gg][Ee][Nn][Tt].[Mm][Dd]
